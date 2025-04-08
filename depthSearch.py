@@ -22,6 +22,8 @@ class node:
         self.parent = parent
         self.action = action
         self.path_cost = path_cost
+        def __lt__(self, other):
+            return self.path_cost < other.path_cost
 
         for i in range(len(self.state)):
             for j in range(len(self.state[i])):
@@ -104,18 +106,34 @@ initial_node = node(maze,None,None,0)
 
 def depth_search(initial_node):
     frontier = [initial_node]
+    solutions = []
     while frontier:
         p_node = frontier.pop()
         if p_node.result() == True:
-            print("Sol found")
-            return p_node
+            solutions.append(p_node)
         else:
             p_actions = p_node.actions()
             for action in p_actions:
                 frontier.append(p_node.transition(action))
     if len(frontier) == 0:
-        return None
+        return solutions
+    
+def least_path_cost(solutins):
+    l_sol = len(solutins)
+    for i in range(l_sol):
+        if l_sol > 1:
+            if solutins[i].path_cost < solutins[i+1].path_cost:
+                solutins.pop(i+1)
+                l_sol = l_sol-1
+            else:
+                solutins.pop(i)
+                l_sol = l_sol-1
+        else:
+            return solutins.pop()
 
 
-SOL  =  depth_search(initial_node)
+SOL = least_path_cost(depth_search(initial_node))
 SOL.printmaze()
+
+
+
