@@ -1,8 +1,9 @@
 from copy import deepcopy
 ##opens the Maze text file and reads the file
 ##prompts user for maze location on harddrive
+file_location =  input(r"Enter the file location: ")
 try:
-    with open(r"C:\\Users\\pnama\\Downloads\\maze.txt", "r") as maze_file:
+    with open(file_location, "r") as maze_file:
         maze = maze_file.read()
 except Exception as e:
     print(e)
@@ -131,9 +132,37 @@ def least_path_cost(solutins):
         else:
             return solutins.pop()
 
+def breadth_first_search(initial_node):
+    frontier = [initial_node]
+    solutions = []
+    while frontier:
+        poped_node = frontier.pop(0)
+        if poped_node.result() == True:
+            solutions.append(poped_node)
+        else:
+            possible_actions = poped_node.actions()
+            for action in possible_actions:
+                frontier.append(poped_node.transition(action))
+    if len(frontier) == 0:
+        return solutions
 
-SOL = least_path_cost(depth_search(initial_node))
-SOL.printmaze()
+def main():
+    while True:
+        choice = input("Enter \"0\" for Depth first Search And \"1\" For Breadth First Search: ")
+        if choice.isdigit() == True:
+            choice = int(choice)
+            if choice != 0 and choice != 1 and choice != 2:
+                continue
+            else:
+                break
+        else:
+            continue
+    
+    if choice == 0:
+        depth_search(initial_node)[0].printmaze()
+    if choice == 1:
+        breadth_first_search(initial_node)[0].printmaze()
+    if choice == 2:
+        least_path_cost(breadth_first_search(initial_node)).printmaze()
 
-
-
+main()
