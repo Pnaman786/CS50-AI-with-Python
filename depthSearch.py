@@ -1,6 +1,11 @@
+from copy import deepcopy
 ##opens the Maze text file and reads the file
-maze_file = open(r"c:\Users\pnama\Downloads\maze.txt", "r")
-maze = maze_file.read()
+##prompts user for maze location on harddrive
+try:
+    with open(r"C:\\Users\\pnama\\Downloads\\maze.txt", "r") as maze_file:
+        maze = maze_file.read()
+except Exception as e:
+    print(e)
 maze = maze.replace(" ", "").split("\n")
 for i in range(len(maze)):
     maze[i] = list(maze[i])
@@ -18,10 +23,24 @@ class node:
         self.action = action
         self.path_cost = path_cost
 
+        for i in range(len(self.state)):
+            for j in range(len(self.state[i])):
+                if "S" == self.state[i][j]:
+                    self.x = j
+                    self.y = i
+                    break
+
+
+    def printmaze(self):
+        for i in range(len(self.state)):
+            print(self.state[i])
+
     #funtion that checks wheather the Maze is solve or not
     def result(self):
-        if "E" in self.state:
-            return False
+        for i in range(len(self.state)):
+            for j in range(len(self.state[i])):
+                if self.state[i][j] == "E":
+                    return False
         else:
             return True
     
@@ -30,46 +49,39 @@ class node:
         possible_actions = []
         maze = self.state
 
-        #the loop figires out current x,y coordiante in the maze and updates them in x_y
-        for i in range(len(maze)):
-            for j in range(len(maze[i])):
-                if "S" == maze[i][j]:
-                    x = j
-                    y = i
-                    break
+        x = self.x
+        y = self.y
 
         length_of_maze = len(maze[y])
-        depth_of_maze = len(maze[y])
+        depth_of_maze = len(maze)
         #checks if We can move right
-        if (x+1 < length_of_maze) and (maze[y][x+1] != "1"):
+        if (x+1 < length_of_maze) and (maze[y][x+1] not in ("1", "X")):
             possible_actions.append("right")
         #checks if can go left
-        if(x+1 != 1) and maze[y][x-1] != "1":
+        if(x > 0) and maze[y][x-1] not in ("1", "X"):
             possible_actions.append("left")
         #checks if can go up
-        if(y+1 != 1) and maze[y-1][x] != "1":
+        if(y > 0) and maze[y-1][x] not in ("1", "X"):
             possible_actions.append("up")
         #check if can go down
-        if(y+1 < depth_of_maze) and maze[y+1][x] != "1":
+        if(y+1 < depth_of_maze) and maze[y+1][x] not in ("1", "X"):
             possible_actions.append("down")
 
-        printmaze()
         return possible_actions
     
     def transition(self, action):
         possible_actions = ["right", "left", "up", "down"]
-        maze_local = maze
-        for i in range(len(maze)):
-            for j in range(len(maze[i])):
-                if "S" == maze[i][j]:
-                    x = j
-                    y = i
-                    break
+        maze_local = deepcopy(self.state)
+        
+        x = self.x
+        y = self.y
+        
         if action not in possible_actions:
             print("invalid input")
         else:
             if action == "right":
                 maze_local[y][x+1] = "S"
+
                 maze_local[y][x] = "X"
             elif action == "left":
                 maze_local[y][x-1] = "S"
@@ -80,8 +92,7 @@ class node:
             elif action == "down":
                 maze_local[y+1][x] = "S"
                 maze_local[y][x] = "X"
-            
-        return node(maze_local,self,action,self.path_cost+1)
+            return node(maze_local,self,action,self.path_cost+1)
             
         
 
@@ -91,5 +102,20 @@ class node:
 #initilizing the maze by coverting starting point into a mzae
 initial_node = node(maze,None,None,0)
 
-frontier = [initial_node]
+def depth_search(initial_node):
+    frontier = [initial_node]
+    while frontier:
+        p_node = frontier.pop()
+        if p_node.result() == True:
+            print("Sol found")
+            return p_node
+        else:
+            p_actions = p_node.actions()
+            for action in p_actions:
+                frontier.append(p_node.transition(action))
+    if len(frontier) == 0:
+        return None
 
+
+SOL  =  depth_search(initial_node)
+SOL.printmaze()
