@@ -1,0 +1,2 @@
+The algorithm was not working because in multiple funtions including result, i was mentioning Global variabel maze (intitial state), instead of state of note
+made, x,y coordinate one of the data parts of class, so does not have to calculate it every time
