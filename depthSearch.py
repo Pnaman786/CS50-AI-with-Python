@@ -1,18 +1,18 @@
 from copy import deepcopy
 ##opens the Maze text file and reads the file
 ##prompts user for maze location on harddrive
-file_location =  input(r"Enter the file location: ")
-try:
-    with open(file_location, "r") as maze_file:
-        maze = maze_file.read()
-except Exception as e:
-    print(e)
-maze = maze.replace(" ", "").split("\n")
+while True:
+    file_location =  input(r"Enter the file location: ")
+    try:
+        with open(file_location, "r") as maze_file:
+            maze = maze_file.read()
+            maze = maze.replace(" ", "").split("\n")
+            break
+    except Exception as e:
+        print("Incorrect input")
+        continue
 for i in range(len(maze)):
     maze[i] = list(maze[i])
-def printmaze():
-    for i in range(len(maze)):
-        print(maze[i])
 
 
 ## A Custom class that would store state of the maze and how it reached that place and possible actions that can be taken
@@ -166,6 +166,21 @@ def greedy_best_search(initial_node):
         if len(frontier) < 2:
             poped_node = frontier.pop()
         else:
+            poped_node = min(frontier, key = lambda node: node.path_cost + node.dxy)
+            frontier.remove(poped_node)
+        if poped_node.result() == True:
+            return poped_node
+        else:
+            possible_actions = poped_node.actions()
+            for action in possible_actions:
+                frontier.append(poped_node.transition(action))
+
+def a_search(initial_node):
+    frontier = [initial_node]
+    while frontier:
+        if len(frontier) < 2:
+            poped_node = frontier.pop()
+        else:
             poped_node = least_dxy(frontier)
             frontier.remove(poped_node)
         if poped_node.result() == True:
@@ -174,6 +189,7 @@ def greedy_best_search(initial_node):
             possible_actions = poped_node.actions()
             for action in possible_actions:
                 frontier.append(poped_node.transition(action))
+
         
 
 def main():
@@ -181,7 +197,8 @@ def main():
         choice = input("""Enter \"0\" for Depth first Search:
                           \"1\" For Breadth First Search:
                           \"2\" For Best solution: 
-                          \"3\" For Best Greedy Best Search:   """)
+                          \"3\" For Best Greedy Best Search:   
+                          \"3\" For A* Search:  """)
         valid_coices = [0,1,2,3,4]
         if choice.isdigit() == True:
             choice = int(choice)
@@ -201,9 +218,6 @@ def main():
     if choice == 3:
         greedy_best_search(initial_node).printmaze()
     if choice ==4 :
-        initial_node.printmaze()
-        print(initial_node.a, initial_node.b)
-        print(initial_node.x, initial_node.y)
-        print(initial_node.dxy)
+        a_search(initial_node).printmaze()
 
 main()
