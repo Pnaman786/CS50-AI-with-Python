@@ -1,2 +1,3 @@
-Created Greedy first search algorithm:
-    for this algorithm to work had to create a introduce dxy which is distance from "E"
+shortened least_path and least_dxy using min()
+fixed an error in greedy best search:
+    the program took a node from frontier without removing it.

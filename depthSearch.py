@@ -140,30 +140,11 @@ def depth_search(initial_node):
     if len(frontier) == 0:
         return solutions
     
-def least_path_cost(solutins):
-    l_sol = len(solutins)
-    for i in range(l_sol):
-        if l_sol > 1:
-            if solutins[i].path_cost < solutins[i+1].path_cost:
-                solutins.pop(i+1)
-                l_sol = l_sol-1
-            else:
-                solutins.pop(i)
-                l_sol = l_sol-1
-        else:
-            return solutins.pop()
-def least_dxy(solutins):
-    l_sol = len(solutins)
-    for i in range(l_sol):
-        if l_sol > 1:
-            if solutins[i].dxy < solutins[i+1].dxy:
-                solutins.pop(i+1)
-                l_sol = l_sol-1
-            else:
-                solutins.pop(i)
-                l_sol = l_sol-1
-        else:
-            return solutins.pop()
+def least_path_cost(solutions):
+    return min(solutions, key=lambda node: node.path_cost)
+
+def least_dxy(solutions):
+    return min(solutions, key=lambda node: node.dxy)
 
 def breadth_first_search(initial_node):
     frontier = [initial_node]
@@ -186,6 +167,7 @@ def greedy_best_search(initial_node):
             poped_node = frontier.pop()
         else:
             poped_node = least_dxy(frontier)
+            frontier.remove(poped_node)
         if poped_node.result() == True:
             return poped_node
         else:
@@ -196,7 +178,10 @@ def greedy_best_search(initial_node):
 
 def main():
     while True:
-        choice = input("Enter \"0\" for Depth first Search And \"1\" For Breadth First Search: ")
+        choice = input("""Enter \"0\" for Depth first Search:
+                          \"1\" For Breadth First Search:
+                          \"2\" For Best solution: 
+                          \"3\" For Best Greedy Best Search:   """)
         valid_coices = [0,1,2,3,4]
         if choice.isdigit() == True:
             choice = int(choice)
