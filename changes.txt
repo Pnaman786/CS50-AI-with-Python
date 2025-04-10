@@ -1,4 +1,2 @@
-Created breadth first Search
-Added all the solution states to a List
-created a funtion to pick a node with least path PAth_cost
-allowed user to enter location of maze file and provided choice to select whcih algorith runs
+Created Greedy first search algorithm:
+    for this algorithm to work had to create a introduce dxy which is distance from "E"

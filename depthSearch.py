@@ -32,6 +32,28 @@ class node:
                     self.x = j
                     self.y = i
                     break
+        self.a = self.b = None
+        for i in range(len(self.state)):
+            for j in range(len(self.state[i])):
+                if "E" == self.state[i][j]:
+                    self.a = j
+                    self.b = i
+                    break
+
+           #a heuristic for greedy first search 
+        if self.a != None:
+            if self.x > self.a :
+                l_x = self.x - self.a
+            else:
+                l_x = self.a -self.x
+            if self.y > self.b :
+                l_y = self.y - self.b
+            else:
+                l_y = self.b -self.y
+            
+            self.dxy = l_x + l_y
+        else:
+            self.dxy = 0
 
 
     def printmaze(self):
@@ -96,8 +118,7 @@ class node:
                 maze_local[y+1][x] = "S"
                 maze_local[y][x] = "X"
             return node(maze_local,self,action,self.path_cost+1)
-            
-        
+
 
 
         
@@ -131,6 +152,18 @@ def least_path_cost(solutins):
                 l_sol = l_sol-1
         else:
             return solutins.pop()
+def least_dxy(solutins):
+    l_sol = len(solutins)
+    for i in range(l_sol):
+        if l_sol > 1:
+            if solutins[i].dxy < solutins[i+1].dxy:
+                solutins.pop(i+1)
+                l_sol = l_sol-1
+            else:
+                solutins.pop(i)
+                l_sol = l_sol-1
+        else:
+            return solutins.pop()
 
 def breadth_first_search(initial_node):
     frontier = [initial_node]
@@ -146,12 +179,28 @@ def breadth_first_search(initial_node):
     if len(frontier) == 0:
         return solutions
 
+def greedy_best_search(initial_node):
+    frontier = [initial_node]
+    while frontier:
+        if len(frontier) < 2:
+            poped_node = frontier.pop()
+        else:
+            poped_node = least_dxy(frontier)
+        if poped_node.result() == True:
+            return poped_node
+        else:
+            possible_actions = poped_node.actions()
+            for action in possible_actions:
+                frontier.append(poped_node.transition(action))
+        
+
 def main():
     while True:
         choice = input("Enter \"0\" for Depth first Search And \"1\" For Breadth First Search: ")
+        valid_coices = [0,1,2,3,4]
         if choice.isdigit() == True:
             choice = int(choice)
-            if choice != 0 and choice != 1 and choice != 2:
+            if choice not in valid_coices:
                 continue
             else:
                 break
@@ -164,5 +213,12 @@ def main():
         breadth_first_search(initial_node)[0].printmaze()
     if choice == 2:
         least_path_cost(breadth_first_search(initial_node)).printmaze()
+    if choice == 3:
+        greedy_best_search(initial_node).printmaze()
+    if choice ==4 :
+        initial_node.printmaze()
+        print(initial_node.a, initial_node.b)
+        print(initial_node.x, initial_node.y)
+        print(initial_node.dxy)
 
 main()
